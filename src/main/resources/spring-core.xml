@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="com">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+
+
+    <!-- 数据库连接池 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="url" value="jdbc:sqlserver://127.0.0.1:1433;DatabaseName=test" />
+        <property name="username" value="sa" />
+        <property name="password" value="123456" />
+        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+        <property name="maxActive" value="10" />
+        <property name="minIdle" value="3" />
+    </bean>
+
+
+    <!-- MyBatis SqlSessionFactoryBean 配置 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--加载mybatis的全局配置文件-->
+        <property name="configLocation" value="classpath:spring-mybatis.xml"/>
+        <!-- 自动扫描Mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath*:com/mapper/*.xml"/>
+     </bean>
+
+    <!-- 加载 mapper.xml对应的接口 配置文件 -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 注入sqlSessionFactory -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!-- 给出需要扫描mapper接口包 -->
+        <property name="basePackage" value="com.dao"/>
+    </bean>
+
+
+
+
+
+    <!-- 配置事务管理器 -->
+    <bean id="txManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!-- 配置基于注解的声明式事务 -->
+    <tx:annotation-driven transaction-manager="txManager" />
+
+
+
+    <!--使用javaConfiger了-->
+    <!--<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>-->
+
+   <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+
+    <!-- 通知 -->
+    <!-- id属性随便起 -->
+    <!-- transaction-manager属性的值，是上面事务管理器的bean标签的id属性的值 -->
+    <!--<tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            &lt;!&ndash; 传播行为 &ndash;&gt;
+            &lt;!&ndash;
+            PROPAGATION_REQUIRED - 支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。
+            PROPAGATION_SUPPORTS - 支持当前事务，如果当前没有事务，就以非事务方式执行。
+            PROPAGATION_MANDATORY - 支持当前事务，如果当前没有事务，就抛出异常。
+            PROPAGATION_REQUIRES_NEW - 新建事务，如果当前存在事务，把当前事务挂起。
+            PROPAGATION_NOT_SUPPORTED - 以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
+            PROPAGATION_NEVER - 以非事务方式执行，如果当前存在事务，则抛出异常。
+
+            isolation属性 - [隔离级别]
+
+            https://www.cnblogs.com/yangy608/archive/2011/06/29/2093478.html
+
+            read-only只读
+            read-only只读事务配置是为了避免多次查询结果不一致，即在进行数据库查询之前，已经查询的结果不能有变动
+            &ndash;&gt;
+            &lt;!&ndash;
+            tx:method作用是，指定aop:advisor标签的属性pointcut找到的类里，哪个方法加事务，方法名字采用下面通配形式
+            tx:method子标签的name属性的值，采用通配符形式，*代表任意字符
+            下面的name属性值的配置的含义是：以四个单词开头的方法都被加入事务
+            &ndash;&gt;
+            <tx:method name="save*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="insert*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            &lt;!&ndash;
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="select*" propagation="SUPPORTS" read-only="true"/>
+             &ndash;&gt;
+        </tx:attributes>
+    </tx:advice>-->
+
+
+    <!--引入子标签aop:config，创建sop方式管理事务的配置-->
+    <aop:config>
+        <!--
+        第一个 * - 通配 返回值类型
+        第二个 * - 通配包com.xx.ssmdemo.pc.service.impl下的class
+        第三个 * - 通配包com.xx.ssmdemo.pc.service.impl下的class的方法
+        第四个 .. - 通配 方法可以有0个或多个参数
+        -->
+        <!-- advice-ref的值是上面tx:advice标签的id属性的值 -->
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.serviceImpl.*.*(..))"/>
+    </aop:config>
+
+
+
+</beans>
