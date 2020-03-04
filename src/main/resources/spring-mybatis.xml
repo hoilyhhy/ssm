@@ -3,11 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-   <!--<typeAliases>
-        <package name="com.entity"  />
-   </typeAliases>-->
 
-  <!-- <mappers>
+
+  <typeAliases>
+        <package name="com.entity"  />
+   </typeAliases>
+
+<!--<mappers>
      <package name="com/mapping"></package>
 </mappers>-->
 

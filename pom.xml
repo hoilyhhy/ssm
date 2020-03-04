@@ -23,8 +23,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
+      <version>4.13</version>
     </dependency>
 
     <!--spring-->
@@ -62,12 +61,19 @@
       <artifactId>mybatis-spring</artifactId>
       <version>1.2.2</version>
     </dependency>
+
     <!--数据库驱动包-->
-    <dependency>
+    <!--<dependency>
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>sqljdbc4</artifactId>
       <version>4.0</version>
+    </dependency>-->
+    <dependency>
+      <groupId>com.microsoft.sqlserver</groupId>
+      <artifactId>mssql-jdbc</artifactId>
+      <version>6.1.0.jre8</version>
     </dependency>
+
     <!--日志文件-->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -102,6 +108,16 @@
       <groupId>javax.servlet</groupId>
       <artifactId>jsp-api</artifactId>
       <version>2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>RELEASE</version>
     </dependency>
   </dependencies>
 
@@ -140,5 +156,22 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+
+    <!--
+   报错：Error parsing SQL Mapper Configuration. Cause: java.io.IOException: Could not find resource
+   原因是： idea不会编译src的java目录的xml文件
+   所以解决思路就是：将IDEA maven项目中src源代码下的xml等资源文件编译进classes文件夹
+   具体操作方法就是：配置maven的pom文件配置，在<build>节点下添加<resources>代码-->
+
+      <resources>
+        <resource>
+          <directory>src/main/java</directory>
+          <includes>
+            <include>**/*.xml</include>
+          </includes>
+        </resource>
+      </resources>
+
   </build>
 </project>

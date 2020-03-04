@@ -38,9 +38,9 @@ public class TestController {
 
     @RequestMapping(value = "/adduser",method = RequestMethod.POST)
     @ResponseBody
-    public int adduser(){
+    public int adduser(SysUser sysUser){
 
-        return testService.saveUser( new SysUser(1,"hhy2"));
+        return testService.saveUser(sysUser);
     }
 
 

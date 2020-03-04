@@ -8,12 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.service.TestService;
 
 @Service
+@Transactional
 public class TestServiceImpl implements TestService {
 
     public TestServiceImpl(){}
 
     @Autowired
-    private SysUserMapper SysUserMapper;
+    private SysUserMapper sysUserMapper;
 
     @Override
     public boolean pass() {
@@ -21,7 +22,6 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    @Transactional
     public SysUser getUserById(Integer id) {
         SysUser user = new SysUser();
         if(id == 1){
@@ -31,8 +31,7 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    @Transactional
     public int saveUser(SysUser sysUser) {
-       return SysUserMapper.insert(sysUser);
+       return sysUserMapper.insert(sysUser);
     }
 }
