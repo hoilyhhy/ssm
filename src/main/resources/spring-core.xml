@@ -60,11 +60,11 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>-->
 
-   <tx:advice id="txAdvice" transaction-manager="txManager">
-        <tx:attributes>
+   <!--<tx:advice id="txAdvice" transaction-manager="txManager">
+        &lt;!&ndash;<tx:attributes>
             <tx:method name="*" propagation="REQUIRED"/>
-        </tx:attributes>
-    </tx:advice>
+        </tx:attributes>&ndash;&gt;
+    </tx:advice>-->
 
 
     <!-- 通知 -->
@@ -107,16 +107,18 @@
 
 
     <!--引入子标签aop:config，创建sop方式管理事务的配置-->
-    <aop:config>
-        <!--
+  <!--  <aop:config>
+        &lt;!&ndash;
         第一个 * - 通配 返回值类型
         第二个 * - 通配包com.xx.ssmdemo.pc.service.impl下的class
         第三个 * - 通配包com.xx.ssmdemo.pc.service.impl下的class的方法
         第四个 .. - 通配 方法可以有0个或多个参数
-        -->
-        <!-- advice-ref的值是上面tx:advice标签的id属性的值 -->
+        &ndash;&gt;
+        &lt;!&ndash; advice-ref的值是上面tx:advice标签的id属性的值 &ndash;&gt;
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.serviceImpl.*.*(..))"/>
-    </aop:config>
+    </aop:config>-->
+
+
 
 
 
